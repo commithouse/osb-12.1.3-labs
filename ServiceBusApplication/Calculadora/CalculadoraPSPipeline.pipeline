@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:pipelineEntry xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
+    <con:coreEntry>
+        <con:binding type="SOAP" isSoap12="false" xsi:type="con:SoapBindingType">
+            <con:wsdl ref="Calculadora/CalculadoraWS"/>
+            <con:binding>
+                <con:name>CalculadoraSoapSOAP11Binding</con:name>
+                <con:namespace>urn:CalculadoraWS</con:namespace>
+            </con:binding>
+        </con:binding>
+        <con:xqConfiguration>
+            <con:snippetVersion>1.0</con:snippetVersion>
+        </con:xqConfiguration>
+    </con:coreEntry>
+    <con:router>
+        <con:flow>
+            <con:branch-node type="operation" id="_FlowId-7f000001.N6c035268.0.1663c53f6b1.N7f9f" name="BranchNode1">
+                <con:context/>
+                <con:branch-table>
+                    <con:branch name="somar">
+                        <con:operator>equals</con:operator>
+                        <con:value/>
+                        <con:flow>
+                            <con:route-node name="RouteNode1">
+                                <con:context>
+                                    <con1:userNsDecl prefix="t1" namespace="http://tempuri.org/"/>
+                                    <con1:userNsDecl prefix="cal" namespace="http://www.calculadora.com"/>
+                                </con:context>
+                                <con:actions>
+                                    <con2:route>
+                                        <con1:id>_ActionId-7f000001.N6c035268.0.1663c53f6b1.N7f6c</con1:id>
+                                        <con2:service ref="Calculadora/CalculadoraBS" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+                                        <con2:operation>Add</con2:operation>
+                                        <con2:outboundTransform>
+                                            <con3:replace varName="body" contents-only="true">
+                                                <con1:id>_ActionId-7f000001.N6c035268.0.1663c53f6b1.N7f3a</con1:id>
+                                                <con3:expr>
+                                                    <con1:xqueryTransform>
+                                                        <con1:resource ref="Calculadora/canonico2tecnicoSomar"/>
+                                                        <con1:param name="esoma">
+                                                            <con1:path>$body/cal:entrada</con1:path>
+                                                        </con1:param>
+                                                    </con1:xqueryTransform>
+                                                </con3:expr>
+                                            </con3:replace>
+                                        </con2:outboundTransform>
+                                        <con2:responseTransform>
+                                            <con3:replace varName="body" contents-only="true">
+                                                <con1:id>_ActionId-7f000001.N6c035268.0.1663c53f6b1.N7f08</con1:id>
+                                                <con3:expr>
+                                                    <con1:xqueryTransform>
+                                                        <con1:resource ref="Calculadora/tecnico2canonicoSomar"/>
+                                                        <con1:param name="ssoma">
+                                                            <con1:path/>
+                                                        </con1:param>
+                                                    </con1:xqueryTransform>
+                                                </con3:expr>
+                                            </con3:replace>
+                                        </con2:responseTransform>
+                                    </con2:route>
+                                </con:actions>
+                            </con:route-node>
+                        </con:flow>
+                    </con:branch>
+                    <con:default-branch>
+                        <con:flow/>
+                    </con:default-branch>
+                </con:branch-table>
+            </con:branch-node>
+        </con:flow>
+    </con:router>
+</con:pipelineEntry>
